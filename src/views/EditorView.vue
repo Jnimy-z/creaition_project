@@ -58,6 +58,7 @@ import {
   watchEffect,
   provide,
   computed,
+  watch
 } from 'vue';
 import Toolbar from '@/components/ImageEditor/Toolbar.vue';
 import ImageEditor from '@/components/ImageEditor/ImageEditor.vue';
@@ -72,8 +73,7 @@ const editorWidth = ref(800);
 const editorHeight = ref(600);
 const hasImageLoaded = ref(false);
 
-// 提供编辑器引用给子组件
-provide('imageEditorRef', imageEditorRef.value);
+
 watchEffect(() => {
   provide('imageEditorRef', imageEditorRef.value);
 });
@@ -86,13 +86,15 @@ const checkIsMobile = () => {
 // 检查是否有图像加载
 const checkImageLoaded = () => {
   if (imageEditorRef.value?.editor) {
-    const canvas = imageEditorRef.value.editor.getCanvas();
+    const canvas = imageEditorRef.value.editor?.getCanvas();
     hasImageLoaded.value = !!canvas && canvas.width > 0;
   }
 };
 
 // 初始化
 onMounted(() => {
+  // 提供编辑器引用给子组件
+  provide('imageEditorRef', imageEditorRef.value);
   checkIsMobile();
   window.addEventListener('resize', checkIsMobile);
 
@@ -104,6 +106,18 @@ onMounted(() => {
     editorHeight.value =
       imageEditorRef.value?.editor?.getCanvasSize().height || 600;
   }, 300);
+  // 组件挂载后，监听子组件暴露的 ref
+  if (imageEditorRef.value) {
+    // 关键：监听子组件 ref 的 .value 变化（而非 ref 本身）
+    watch(
+      () => imageEditorRef.value.editor, // 监听目标：子组件 ref 的值
+      (newVal, oldVal) => {
+        console.log("子组件编辑器实例更新：", oldVal, "→", newVal);
+        
+      },
+      { immediate: true } // 立即执行一次（获取初始值）
+    );
+  }
 
   // 加载收藏
   aiStore.loadFavorites();
@@ -136,9 +150,10 @@ const handleFilter = () => {
 // 更新图像尺寸
 const handleUpdateSize = ({ width, height }) => {
   if (width > 0 && height > 0) {
+    debugger
     editorWidth.value = width;
     editorHeight.value = height;
-    imageEditorRef.value?.editor?.resizeCanvas(width, height);
+    imageEditorRef.value?.resizeCanvas(width, height);
   }
 };
 

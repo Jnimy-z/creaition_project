@@ -30,11 +30,12 @@ export const textToImage = async (prompt) => {
     url: '/api/models/stabilityai/stable-diffusion-xl-base-1.0',
     method: 'POST',
     headers: {
+      'accept': `application/json`,
       'Authorization': `Bearer ${AI_API_TOKEN}`,
       'Content-Type': 'application/json'
     },
     data: {
-      input: { prompt },
+      inputs: { prompt },
       parameters: {
         width: 512,
         height: 512,

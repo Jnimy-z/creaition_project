@@ -32,7 +32,8 @@ export const useAiImageStore = defineStore('aiImage', {
         }
 
         // 提取 Base64 图像（兼容不同模型响应格式）
-        const imageUrl = result.output?.image || result.image || result.data?.image
+        const imageUrl = result.output?.image || result.image || result.data?.image || 'data:image/png;base64,'+result
+        console.log(imageUrl)
         if (!imageUrl) throw new Error('生成失败，未返回有效图像')
 
         // 更新状态

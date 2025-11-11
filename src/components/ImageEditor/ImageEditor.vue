@@ -33,6 +33,7 @@
       disableDownload: false,
       disableGuide: true
     })
+    debugger
   
     // 监听图像加载事件
     editor.value.on('imageLoaded', () => {
@@ -41,11 +42,13 @@
   }
   
   onMounted(() => {
+    initEditor()
     // 延迟初始化，确保 DOM 渲染完成
-    setTimeout(initEditor, 100)
+    //setTimeout(initEditor, 100)
   })
   
   onUnmounted(() => {
+    debugger
     // 销毁编辑器，释放资源
     if (editor.value) {
       editor.value.destroy()
@@ -55,7 +58,7 @@
   
   // 暴露方法给父组件
   defineExpose({
-    editor: editor.value,
+    editor: editor,
     loadImage: (url, name = '图像') => {
       if (editor.value) {
         editor.value.loadImageFromURL(url, name)
